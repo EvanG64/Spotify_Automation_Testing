@@ -3,14 +3,14 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class PlaylistPage extends BasePage {
+public class PlayListPage extends BasePage {
     private By createPlaylistBtn = By.cssSelector("[data-testid='create-playlist-button']");
     private By playlistNameInput = By.cssSelector("[data-testid='playlist-edit-details-name-input']");
     private By saveBtn = By.cssSelector("[data-testid='playlist-edit-details-save-button']");
     private By playlistTitle = By.cssSelector("h1.Type__TypeElement-sc-goli3j-0");
     private By deleteOption = By.xpath("//span[text()='Delete']");
 
-    public PlaylistPage(WebDriver driver) {
+    public PlayListPage(WebDriver driver) {
         super(driver);
     }
 
