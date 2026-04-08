@@ -32,7 +32,7 @@ public class ErrorHandlingTests extends BaseTests {
 
     @Test
     public void testEmptyFormSubmissionError() {
-        var loginPage = homePage.clickLoginNav();
+        pages.LoginPage loginPage = homePage.clickLoginNav();
         loginPage.clickLogin();
         Assert.assertFalse(loginPage.getErrorMessage().isEmpty());
     }
