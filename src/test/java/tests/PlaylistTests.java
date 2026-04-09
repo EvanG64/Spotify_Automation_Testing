@@ -13,7 +13,7 @@ public class PlaylistTests extends BaseTests {
         PlayListPage playlistPage = new PlayListPage(driver);
 
         Assert.assertTrue(driver.getCurrentUrl().contains("/playlist/"));
-        Assert.assertTrue(playlistPage.getPlaylistTitle().length() > 0);
+        Assert.assertTrue(!playlistPage.getPlaylistTitle().isEmpty());
     }
 
     @Test

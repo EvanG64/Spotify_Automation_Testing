@@ -57,6 +57,7 @@ public class LoginTests extends BaseTests {
         );
     }
 
+
     @Test
     public void testEmptyEmailSubmission() {
         driver.get("https://accounts.spotify.com/en/login");
@@ -73,5 +74,34 @@ public class LoginTests extends BaseTests {
                         || pageText.contains("welcome back"),
                 "Expected empty email behavior was not shown."
         );
+    }
+
+    @Test
+    public void testValidLogin() throws InterruptedException {
+        driver.get("https://accounts.spotify.com/en/login");
+        LoginPage loginPage = new LoginPage(driver);
+
+        loginPage.waitForPage();
+        loginPage.setEmail("ebgoudy4412@eagle.fgcu.edu");
+        loginPage.clickContinue();
+
+        // After email submission, Spotify shows a page with options to send code or log in with password
+        Thread.sleep(1500); // Wait for options page to load
+        
+        // Click on "Log in with password" option
+        loginPage.clickLogInWithPassword();
+
+        // Now password field should be visible
+        Assert.assertTrue(loginPage.isPasswordFieldVisible(), "Password field should be visible after selecting log in with password");
+
+        loginPage.setPassword("Player122@");
+        loginPage.clickLogIn();
+
+        // Wait for redirect to home page (or any successful login indicator)
+        Thread.sleep(3000); // Wait for page to load after login
+
+        // Verify we're no longer on the login page (simple check)
+        String currentUrl = driver.getCurrentUrl();
+        Assert.assertNotEquals(currentUrl, "https://accounts.spotify.com/en/login", "Should be redirected after successful login");
     }
 }
