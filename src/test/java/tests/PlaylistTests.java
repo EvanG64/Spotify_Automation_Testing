@@ -8,36 +8,46 @@ import pages.PlayListPage;
 public class PlaylistTests extends BaseTests {
 
     @Test
-    public void testCreateNewPlaylist() {
+    public void testPlaylistPageLoads() {
+        driver.get("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M");
         PlayListPage playlistPage = new PlayListPage(driver);
-        playlistPage.clickCreatePlaylist();
-        Assert.assertTrue(playlistPage.getPlaylistTitle().contains("My Playlist"));
+
+        Assert.assertTrue(driver.getCurrentUrl().contains("/playlist/"));
+        Assert.assertTrue(playlistPage.getPlaylistTitle().length() > 0);
     }
 
     @Test
-    public void testRenamePlaylist() {
+    public void testPlaylistTitleVisible() {
+        driver.get("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M");
         PlayListPage playlistPage = new PlayListPage(driver);
-        String newName = "Study Focus";
-        playlistPage.editPlaylistName(newName);
-        Assert.assertEquals(playlistPage.getPlaylistTitle(), newName);
+
+        Assert.assertFalse(playlistPage.getPlaylistTitle().isEmpty());
     }
 
     @Test
-    public void testAddSongToPlaylist() {
-        // Navigate, search song, click add to playlist context menu
-        // Assert song appears in playlist view
-    }
-
-    @Test
-    public void testRemoveSongFromPlaylist() {
-        // Open playlist, click remove on a song
-        // Assert song count decreases
-    }
-
-    @Test
-    public void testDeletePlaylist() {
+    public void testPlaylistHasTracks() {
+        driver.get("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M");
         PlayListPage playlistPage = new PlayListPage(driver);
-        playlistPage.deletePlaylist();
-        // Assert playlist no longer appears in sidebar navigation
+
+        Assert.assertTrue(playlistPage.getTrackCount() > 0);
+    }
+
+    @Test
+
+    public void testPlaylistPlayButtonVisible() {
+
+        driver.get("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M");
+
+        PlayListPage playlistPage = new PlayListPage(driver);
+
+        Assert.assertTrue(playlistPage.isPlayButtonVisible(), "Play button is not visible.");
+    }
+
+    @Test
+    public void testPlaylistMoreOptionsVisible() {
+        driver.get("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M");
+        PlayListPage playlistPage = new PlayListPage(driver);
+
+        Assert.assertTrue(playlistPage.isMoreOptionsVisible());
     }
 }

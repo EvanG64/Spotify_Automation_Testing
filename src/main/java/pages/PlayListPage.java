@@ -2,32 +2,63 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
-public class PlayListPage extends BasePage {
-    private By createPlaylistBtn = By.cssSelector("[data-testid='create-playlist-button']");
-    private By playlistNameInput = By.cssSelector("[data-testid='playlist-edit-details-name-input']");
-    private By saveBtn = By.cssSelector("[data-testid='playlist-edit-details-save-button']");
-    private By playlistTitle = By.cssSelector("h1.Type__TypeElement-sc-goli3j-0");
-    private By deleteOption = By.xpath("//span[text()='Delete']");
+import java.util.List;
+
+public class PlayListPage {
+
+    WebDriver driver;
+
+    private final By playlistTitle = By.tagName("h1");
+    private final By trackRows = By.cssSelector("[data-testid='tracklist-row']");
+
+    // broader play button selectors
+    private final By playButtons = By.cssSelector(
+            "button[data-testid='play-button'], " +
+                    "button[aria-label*='Play'], " +
+                    "button[aria-label*='play']"
+    );
+
+    // broader more options selectors
+    private final By moreOptionsButtons = By.cssSelector(
+            "button[aria-label*='more'], " +
+                    "button[aria-label*='More']"
+    );
 
     public PlayListPage(WebDriver driver) {
-        super(driver);
-    }
-
-    public void clickCreatePlaylist() {
-        clickElement(driver.findElement(createPlaylistBtn));
-    }
-
-    public void editPlaylistName(String newName) {
-        enterText(driver.findElement(playlistNameInput), newName);
-        clickElement(driver.findElement(saveBtn));
+        this.driver = driver;
     }
 
     public String getPlaylistTitle() {
-        return driver.findElement(playlistTitle).getText();
+        List<WebElement> titles = driver.findElements(playlistTitle);
+        if (!titles.isEmpty() && titles.get(0).isDisplayed()) {
+            return titles.get(0).getText();
+        }
+        return "";
     }
 
-    public void deletePlaylist() {
-        clickElement(driver.findElement(deleteOption)); // Usually requires right-click or context menu interaction first
+    public int getTrackCount() {
+        return driver.findElements(trackRows).size();
+    }
+
+    public boolean isPlayButtonVisible() {
+        List<WebElement> buttons = driver.findElements(playButtons);
+        for (WebElement button : buttons) {
+            if (button.isDisplayed()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isMoreOptionsVisible() {
+        List<WebElement> buttons = driver.findElements(moreOptionsButtons);
+        for (WebElement button : buttons) {
+            if (button.isDisplayed()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

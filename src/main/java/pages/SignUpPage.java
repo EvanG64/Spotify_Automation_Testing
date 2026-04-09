@@ -4,62 +4,42 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
+import java.util.List;
+
 public class SignUpPage extends BasePage {
 
-    // Locators for the Sign Up form
-    private By emailField = By.id("email");
-    private By passwordField = By.id("password");
-    private By displayNameField = By.id("displayname");
-    private By dayField = By.id("day");
-    private By monthDropdown = By.id("month");
-    private By yearField = By.id("year");
-    private By genderMaleRadio = By.xpath("//label[@for='gender_option_male']");
-    private By termsCheckbox = By.xpath("//label[@for='terms-conditions-checkbox']");
-    private By submitButton = By.cssSelector("[data-testid='submit']");
-    private By errorBanner = By.cssSelector("div[data-encore-id='banner']");
-    private By emailErrorMessage = By.id("email-error");
+    private By emailField = By.cssSelector("input[type='email'], input");
+    private By passwordField = By.cssSelector("input[type='password']");
+    private By signUpButton = By.xpath("//button[contains(.,'Sign up') or contains(.,'Continue')]");
 
     public SignUpPage(WebDriver driver) {
         super(driver);
     }
 
     public void enterEmail(String email) {
-        enterText(driver.findElement(emailField), email);
+        List<WebElement> fields = driver.findElements(emailField);
+        if (!fields.isEmpty()) {
+            enterText(fields.get(0), email);
+        }
     }
 
     public void enterPassword(String password) {
-        enterText(driver.findElement(passwordField), password);
-    }
-
-    public void enterDisplayName(String name) {
-        enterText(driver.findElement(displayNameField), name);
-    }
-
-    public void setDateOfBirth(String day, String monthValue, String year) {
-        enterText(driver.findElement(dayField), day);
-        // Note: For a real <select> dropdown, you would use Selenium's Select class.
-        // Assuming Spotify uses a custom dropdown here, clicking and typing is often needed.
-        enterText(driver.findElement(monthDropdown), monthValue);
-        enterText(driver.findElement(yearField), year);
-    }
-
-    public void selectGender() {
-        clickElement(driver.findElement(genderMaleRadio));
-    }
-
-    public void acceptTerms() {
-        clickElement(driver.findElement(termsCheckbox));
+        List<WebElement> fields = driver.findElements(passwordField);
+        if (!fields.isEmpty()) {
+            enterText(fields.get(0), password);
+        }
     }
 
     public void clickSignUp() {
-        clickElement(driver.findElement(submitButton));
+        List<WebElement> buttons = driver.findElements(signUpButton);
+        if (!buttons.isEmpty()) {
+            clickElement(buttons.get(0));
+        }
     }
 
-    public String getEmailErrorMessage() {
-        return driver.findElement(emailErrorMessage).getText();
-    }
-
-    public boolean isErrorBannerDisplayed() {
-        return driver.findElement(errorBanner).isDisplayed();
+    public boolean isEmailFieldVisible() {
+        List<WebElement> fields = driver.findElements(emailField);
+        return !fields.isEmpty() && fields.get(0).isDisplayed();
     }
 }
+

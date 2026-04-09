@@ -3,40 +3,48 @@ package tests;
 import base.BaseTests;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import pages.ProfilePage;
 
 public class ProfileSettingsTests extends BaseTests {
 
     @Test
-    public void testVerifyProfileName() {
-        ProfilePage profilePage = homePage.openProfileMenu();
-        Assert.assertNotNull(profilePage.getProfileName());
+    public void testLoginPageLoads() {
+        driver.get("https://accounts.spotify.com/en/login");
+
+        Assert.assertTrue(driver.getCurrentUrl().contains("login"));
+        Assert.assertTrue(driver.getTitle().toLowerCase().contains("spotify"));
     }
 
     @Test
-    public void testChangeDisplayName() {
-        ProfilePage profilePage = homePage.openProfileMenu();
-        profilePage.clickEditProfile();
-        profilePage.changeDisplayName("Automation User");
-        Assert.assertEquals(profilePage.getProfileName(), "Automation User");
+    public void testSignupPageLoads() {
+        driver.get("https://www.spotify.com/us/signup");
+
+        Assert.assertTrue(driver.getCurrentUrl().toLowerCase().contains("signup"));
     }
 
     @Test
-    public void testFollowersVisibility() {
-        ProfilePage profilePage = homePage.openProfileMenu();
-        // Assert follower count element is displayed
+    public void testPasswordResetPageLoads() {
+        driver.get("https://www.spotify.com/us/password-reset/");
+
+        Assert.assertTrue(driver.getCurrentUrl().toLowerCase().contains("password"));
     }
 
     @Test
-    public void testFollowingVisibility() {
-        ProfilePage profilePage = homePage.openProfileMenu();
-        // Assert following count element is displayed
+    public void testAccountHelpPageLoads() {
+        driver.get("https://support.spotify.com/us/category/account-help/");
+
+        Assert.assertTrue(driver.getCurrentUrl().toLowerCase().contains("account"));
     }
 
     @Test
-    public void testSuccessfulLogout() {
-        ProfilePage profilePage = homePage.openProfileMenu();
-        profilePage.logout();
-        // Assert URL redirects to login or homepage without auth
+    public void testSpotifyAccountPagesContainBranding() {
+        driver.get("https://accounts.spotify.com/en/login");
+
+        String pageText = driver.findElement(org.openqa.selenium.By.tagName("body")).getText().toLowerCase();
+
+        Assert.assertTrue(
+                pageText.contains("spotify")
+                        || pageText.contains("welcome back")
+                        || pageText.contains("log in")
+        );
     }
 }

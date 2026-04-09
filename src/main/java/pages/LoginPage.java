@@ -3,32 +3,49 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class LoginPage extends BasePage {
+import java.time.Duration;
 
-    private By usernameField = By.id("login-username");
-    private By passwordField = By.id("login-password");
-    private By loginButton = By.id("login-button");
-    private By errorMessage = By.cssSelector("span.Message-sc-15vkh7g-0");
+public class LoginPage {
+
+    WebDriver driver;
+    WebDriverWait wait;
+
+    private final By emailField = By.cssSelector("input");
+    private final By continueButton = By.xpath("//button[contains(.,'Continue')]");
 
     public LoginPage(WebDriver driver) {
-        super(driver);
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
-    public void setUsername(String username) {
-        enterText(driver.findElement(usernameField), username);
+    public void waitForPage() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(emailField));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(continueButton));
     }
 
-    public void setPassword(String password) {
-        enterText(driver.findElement(passwordField), password);
+    public void setEmail(String email) {
+        WebElement emailBox = wait.until(ExpectedConditions.elementToBeClickable(emailField));
+        emailBox.click();
+        emailBox.clear();
+        emailBox.sendKeys(email);
     }
 
-    public void clickLogin() {
-        clickElement(driver.findElement(loginButton));
+    public void clickContinue() {
+        wait.until(ExpectedConditions.elementToBeClickable(continueButton)).click();
     }
 
-    public String getErrorMessage() {
-        wait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(errorMessage));
-        return driver.findElement(errorMessage).getText();
+    public boolean isEmailFieldVisible() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(emailField)).isDisplayed();
+    }
+
+    public boolean isContinueButtonVisible() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(continueButton)).isDisplayed();
+    }
+
+    public String getPageText() {
+        return driver.findElement(By.tagName("body")).getText();
     }
 }
