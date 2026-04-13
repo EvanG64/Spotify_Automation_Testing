@@ -61,4 +61,14 @@ public class PlayListPage {
         }
         return false;
     }
+
+    public void clickPlay() {
+        List<WebElement> buttons = driver.findElements(playButtons);
+        for (WebElement button : buttons) {
+            if (button.isDisplayed()) {
+                button.click();
+                break;
+            }
+        }
+    }
 }

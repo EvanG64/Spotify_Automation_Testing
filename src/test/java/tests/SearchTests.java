@@ -9,83 +9,52 @@ public class SearchTests extends BaseTests {
     @Test
     public void testSearchValidSong() {
         driver.get("https://open.spotify.com/search");
+        pages.SearchPage searchPage = new pages.SearchPage(driver);
 
-        String currentUrl = driver.getCurrentUrl().toLowerCase();
-        String title = driver.getTitle().toLowerCase();
-        String pageText = driver.findElement(org.openqa.selenium.By.tagName("body")).getText().toLowerCase();
+        searchPage.enterSearchQuery("Bohemian Rhapsody");
 
-        Assert.assertTrue(
-                currentUrl.contains("search")
-                        || title.contains("spotify")
-                        || pageText.contains("what do you want to play")
-                        || pageText.contains("search"),
-                "Search page did not load for valid song test."
-        );
+        Assert.assertFalse(searchPage.isNoResultsMessageDisplayed(), "Search for valid song should show results.");
     }
 
     @Test
     public void testSearchValidArtist() {
         driver.get("https://open.spotify.com/search");
+        pages.SearchPage searchPage = new pages.SearchPage(driver);
 
-        String currentUrl = driver.getCurrentUrl().toLowerCase();
-        String title = driver.getTitle().toLowerCase();
-        String pageText = driver.findElement(org.openqa.selenium.By.tagName("body")).getText().toLowerCase();
+        searchPage.enterSearchQuery("Queen");
 
-        Assert.assertTrue(
-                currentUrl.contains("search")
-                        || title.contains("spotify")
-                        || pageText.contains("what do you want to play")
-                        || pageText.contains("search"),
-                "Search page did not load for valid artist test."
-        );
+        Assert.assertFalse(searchPage.isNoResultsMessageDisplayed(), "Search for valid artist should show results.");
     }
 
     @Test
     public void testSearchInvalidQuery() {
         driver.get("https://open.spotify.com/search");
+        pages.SearchPage searchPage = new pages.SearchPage(driver);
 
-        String currentUrl = driver.getCurrentUrl().toLowerCase();
-        String title = driver.getTitle().toLowerCase();
-        String pageText = driver.findElement(org.openqa.selenium.By.tagName("body")).getText().toLowerCase();
+        searchPage.enterSearchQuery("asdfghjklqwertyuiop");
 
-        Assert.assertTrue(
-                currentUrl.contains("search")
-                        || title.contains("spotify")
-                        || pageText.contains("search"),
-                "Search page did not load for invalid query test."
-        );
+        Assert.assertTrue(searchPage.isNoResultsMessageDisplayed(), "Search for invalid query should show no results.");
     }
 
     @Test
     public void testClearSearchFunctionality() {
         driver.get("https://open.spotify.com/search");
+        pages.SearchPage searchPage = new pages.SearchPage(driver);
 
-        String currentUrl = driver.getCurrentUrl().toLowerCase();
-        String title = driver.getTitle().toLowerCase();
-        String pageText = driver.findElement(org.openqa.selenium.By.tagName("body")).getText().toLowerCase();
+        searchPage.enterSearchQuery("test");
+        searchPage.clearSearch();
 
-        Assert.assertTrue(
-                currentUrl.contains("search")
-                        || title.contains("spotify")
-                        || pageText.contains("search"),
-                "Search page did not load for clear search test."
-        );
+        Assert.assertTrue(searchPage.isSearchEmpty(), "Search should be cleared.");
     }
 
     @Test
     public void testPodcastFilter() {
         driver.get("https://open.spotify.com/search");
+        pages.SearchPage searchPage = new pages.SearchPage(driver);
 
-        String currentUrl = driver.getCurrentUrl().toLowerCase();
-        String title = driver.getTitle().toLowerCase();
-        String pageText = driver.findElement(org.openqa.selenium.By.tagName("body")).getText().toLowerCase();
+        searchPage.enterSearchQuery("podcast");
+        searchPage.filterByPodcasts();
 
-        Assert.assertTrue(
-                currentUrl.contains("search")
-                        || title.contains("spotify")
-                        || pageText.contains("search")
-                        || pageText.contains("podcast"),
-                "Search page did not load for podcast filter test."
-        );
+        Assert.assertFalse(searchPage.isNoResultsMessageDisplayed(), "Filtering by podcasts should show results.");
     }
 }
