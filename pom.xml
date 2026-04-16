@@ -31,7 +31,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <scope>test</scope>
         </dependency>
 
-        <!-- WebDriverManager -->
+        <!-- WebDriverManager - auto downloads correct Firefox/Chrome driver -->
         <dependency>
             <groupId>io.github.bonigarcia</groupId>
             <artifactId>webdrivermanager</artifactId>
@@ -42,8 +42,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <build>
         <plugins>
-
-            <!-- Surefire plugin to run TestNG -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -54,7 +52,6 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                     </suiteXmlFiles>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 

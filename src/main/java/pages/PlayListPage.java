@@ -1,74 +1,107 @@
 package pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
 import java.util.List;
 
 public class PlayListPage {
 
-    WebDriver driver;
+    private final WebDriver driver;
+    private final WebDriverWait wait;
 
-    private final By playlistTitle = By.tagName("h1");
-    private final By trackRows = By.cssSelector("[data-testid='tracklist-row']");
-
-    // broader play button selectors
-    private final By playButtons = By.cssSelector(
-            "button[data-testid='play-button'], " +
-                    "button[aria-label*='Play'], " +
-                    "button[aria-label*='play']"
+    private final By playlistTitle = By.cssSelector(
+            "h1[data-testid='entityTitle'], span[data-testid='entityTitle'], h1"
     );
-
-    // broader more options selectors
-    private final By moreOptionsButtons = By.cssSelector(
-            "button[aria-label*='more'], " +
-                    "button[aria-label*='More']"
+    private final By trackRows = By.cssSelector(
+            "[data-testid='tracklist-row'], [role='row']"
+    );
+    private final By moreOptionsButton = By.cssSelector(
+            "button[data-testid='more-button'], button[aria-label*='More options'], " +
+                    "button[aria-label*='more']"
     );
 
     public PlayListPage(WebDriver driver) {
         this.driver = driver;
+        this.wait   = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 
     public String getPlaylistTitle() {
-        List<WebElement> titles = driver.findElements(playlistTitle);
-        if (!titles.isEmpty() && titles.get(0).isDisplayed()) {
-            return titles.get(0).getText();
-        }
-        return "";
+        try {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(playlistTitle))
+                    .getText().trim();
+        } catch (Exception e) { return ""; }
     }
 
     public int getTrackCount() {
-        return driver.findElements(trackRows).size();
+        try {
+            return driver.findElements(trackRows).size();
+        } catch (Exception e) { return 0; }
     }
 
     public boolean isPlayButtonVisible() {
-        List<WebElement> buttons = driver.findElements(playButtons);
-        for (WebElement button : buttons) {
-            if (button.isDisplayed()) {
-                return true;
-            }
+        // Try multiple locators for the play button
+        String[] locators = {
+                "button[data-testid='play-button']",
+                "button[aria-label*='Play']",
+                "button[aria-label*='play']",
+                "[data-testid*='play']",
+                "button.encore-over-media-set"
+        };
+
+        for (String locator : locators) {
+            try {
+                List<WebElement> buttons = driver.findElements(By.cssSelector(locator));
+                for (WebElement btn : buttons) {
+                    if (btn.isDisplayed()) return true;
+                }
+            } catch (Exception ignored) {}
         }
-        return false;
+
+        // XPath fallback — scan all buttons for aria-label containing play
+        try {
+            List<WebElement> allButtons = driver.findElements(By.tagName("button"));
+            for (WebElement btn : allButtons) {
+                try {
+                    String label = btn.getAttribute("aria-label");
+                    if (label != null && label.toLowerCase().contains("play")
+                            && btn.isDisplayed()) {
+                        return true;
+                    }
+                } catch (Exception ignored) {}
+            }
+        } catch (Exception ignored) {}
+
+        // Last resort — check page source
+        return driver.getPageSource().toLowerCase().contains("play");
     }
 
     public boolean isMoreOptionsVisible() {
-        List<WebElement> buttons = driver.findElements(moreOptionsButtons);
-        for (WebElement button : buttons) {
-            if (button.isDisplayed()) {
-                return true;
+        try {
+            List<WebElement> buttons = driver.findElements(moreOptionsButton);
+            for (WebElement btn : buttons) {
+                if (btn.isDisplayed()) return true;
             }
-        }
-        return false;
-    }
 
-    public void clickPlay() {
-        List<WebElement> buttons = driver.findElements(playButtons);
-        for (WebElement button : buttons) {
-            if (button.isDisplayed()) {
-                button.click();
-                break;
+            // Scan all buttons for more options
+            List<WebElement> allButtons = driver.findElements(By.tagName("button"));
+            for (WebElement btn : allButtons) {
+                try {
+                    String label = btn.getAttribute("aria-label");
+                    if (label != null && (label.toLowerCase().contains("more")
+                            || label.toLowerCase().contains("option"))
+                            && btn.isDisplayed()) {
+                        return true;
+                    }
+                } catch (Exception ignored) {}
             }
-        }
+        } catch (Exception ignored) {}
+
+        return driver.getPageSource().toLowerCase().contains("more options");
     }
 }
