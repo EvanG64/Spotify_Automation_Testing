@@ -3,7 +3,6 @@ package tests;
 import base.BaseTests;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -19,7 +18,7 @@ public class PlaylistTests extends BaseTests {
     private static final String PUBLIC_PLAYLIST =
             "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M";
 
-// ── No login needed ──────────────────────────────────────────────────────
+    // ── No login needed ──────────────────────────────────────────────────────
 
     @Test
     public void testPlaylistPageLoads() {
@@ -67,18 +66,17 @@ public class PlaylistTests extends BaseTests {
                 "More options button should be visible.");
     }
 
-// ── Login required ───────────────────────────────────────────────────────
+    // ── Login required — logs in ONCE, then all 3 tests reuse the session ────
 
-    @Test
+    @Test(priority = 1)
     public void testSavePlaylistToLibrary() throws InterruptedException {
-        loginAsTestUser();
+        loginAsTestUser(); // Login once here
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
         driver.get(PUBLIC_PLAYLIST);
         wait.until(ExpectedConditions.urlContains("playlist"));
         Thread.sleep(2000);
 
-// Find the save/follow button
         List<WebElement> saveButtons = driver.findElements(By.cssSelector(
                 "button[aria-label*='Save'], button[aria-label*='Add'], " +
                         "button[aria-label*='Follow'], button[data-testid*='add']"
@@ -106,16 +104,15 @@ public class PlaylistTests extends BaseTests {
         );
     }
 
-    @Test
+    @Test(priority = 2, dependsOnMethods = "testSavePlaylistToLibrary")
     public void testCreateNewPlaylist() throws InterruptedException {
-        loginAsTestUser();
+        // Already logged in from testSavePlaylistToLibrary
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
         driver.get("https://open.spotify.com/");
         wait.until(ExpectedConditions.urlContains("open.spotify.com"));
-        Thread.sleep(1500);
 
-// Wait for the "+ Create" button to appear in the sidebar
+        // Wait for the "+ Create" button
         WebElement createBtn = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//button[.//span[normalize-space()='Create']] | " +
                         "//button[@aria-label='Create playlist or folder']")
@@ -125,7 +122,7 @@ public class PlaylistTests extends BaseTests {
                 "arguments[0].scrollIntoView(true); arguments[0].click();", createBtn
         );
 
-// Wait for the dropdown menu to appear then click "Playlist"
+        // Click "Playlist" from the dropdown
         WebElement playlistOption = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//span[normalize-space()='Playlist'] | " +
                         "//*[contains(@class,'option') and normalize-space()='Playlist']")
@@ -138,7 +135,7 @@ public class PlaylistTests extends BaseTests {
 
         Assert.assertTrue(
                 currentUrl.contains("playlist"),
-                "Should be on the new playlist page after creating. URL: " + currentUrl
+                "Should be on the new playlist page. URL: " + currentUrl
         );
         Assert.assertTrue(
                 pageSource.contains("my playlist") ||
@@ -150,9 +147,9 @@ public class PlaylistTests extends BaseTests {
         );
     }
 
-    @Test
+    @Test(priority = 3, dependsOnMethods = "testSavePlaylistToLibrary")
     public void testScrollThroughPlaylist() throws InterruptedException {
-        loginAsTestUser();
+        // Already logged in from testSavePlaylistToLibrary
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
         driver.get(PUBLIC_PLAYLIST);
@@ -172,5 +169,4 @@ public class PlaylistTests extends BaseTests {
         Assert.assertTrue(driver.getCurrentUrl().contains("playlist"),
                 "Should still be on playlist page after scrolling.");
     }
-
 }

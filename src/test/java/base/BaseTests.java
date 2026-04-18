@@ -65,7 +65,7 @@ public class BaseTests {
     }
 
     protected void loginAsTestUser() throws InterruptedException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         pages.LoginPage loginPage = new pages.LoginPage(driver);
 
         driver.get("https://accounts.spotify.com/en/login");
