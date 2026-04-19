@@ -97,7 +97,7 @@ public class LoginTests extends BaseTests {
         Assert.assertTrue(
                 currentUrl.contains("open.spotify.com"),
                 "Should be on Spotify after login. URL: " + currentUrl
-        );
+        );  
         Assert.assertTrue(
                 pageSource.contains("search")
                         || pageSource.contains("home")
